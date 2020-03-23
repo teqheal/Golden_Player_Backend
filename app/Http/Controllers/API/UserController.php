@@ -41,6 +41,66 @@ class UserController extends BaseController
     }
 
     /**
+     * Social Login api
+     *
+     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
+     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam social_type string required Type of social account 1 = FB, 2 = Insta. Example: 1
+     * @bodyParam social_account_id string required Id of the social account. Example: social account id
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function socialLogin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'social_type' => 'required',
+            'social_account_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $findUser = User::where('facebook_id', $request->social_account_id)
+            ->orWhere('instagram_id', $request->social_account_id)
+            ->first();
+
+        if (!empty($findUser)) {
+            $success['token'] =  $findUser->createToken('MyApp')->accessToken;
+            $success['name'] =  $findUser->name;
+            return $this->sendResponse($success, 'User login successfully.');
+        } else {
+            $checkEmail = User::where('email', $request->email)->first();
+            if (!empty($checkEmail)) {
+                if ($request->social_type == 1) {
+                    $checkEmail->facebook_id = $request->social_account_id;
+                } else {
+                    $checkEmail->instagram_id = $request->social_account_id;
+                }
+                $checkEmail->save();
+                $success['token'] =  $checkEmail->createToken('MyApp')->accessToken;
+                $success['name'] =  $checkEmail->name;
+                return $this->sendResponse($success, 'User login successfully.');
+            } else {
+                $user = new User();
+                $user->name = $request->name;
+                $user->email = $request->email;
+                if ($request->social_type == 1) {
+                    $user->facebook_id = $request->social_account_id;
+                } else {
+                    $user->instagram_id = $request->social_account_id;
+                }
+                $user->save();
+                $success['token'] =  $user->createToken('MyApp')->accessToken;
+                $success['name'] =  $user->name;
+                return $this->sendResponse($success, 'User login successfully.');
+            }
+        }
+    }
+
+    /**
      * Login api
      *
      * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com

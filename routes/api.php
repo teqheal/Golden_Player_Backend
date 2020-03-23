@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', 'API\UserController@register');
 Route::post('login', 'API\UserController@login');
+Route::post('socialLogin', 'API\UserController@socialLogin');
 
 Route::middleware('auth:api')->group(function () {
     Route::get('celebs', 'API\CelebrityController@getCelebs');
