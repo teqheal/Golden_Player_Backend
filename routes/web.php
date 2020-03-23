@@ -16,3 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::middleware(['apiDocAuth'])->group(function () {
+    Route::get('/doc', function () {
+        return view('apidoc.index');
+    })->name('apidoc');
+});

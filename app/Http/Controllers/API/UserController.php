@@ -13,6 +13,10 @@ class UserController extends BaseController
     /**
      * Register api
      *
+     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
+     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam password string required Password of the user. Example: ravi@123
+     *
      * @return \Illuminate\Http\Response
      */
     public function register(Request $request)
@@ -21,7 +25,6 @@ class UserController extends BaseController
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
-            'c_password' => 'required|same:password',
         ]);
 
         if ($validator->fails()) {
@@ -39,6 +42,9 @@ class UserController extends BaseController
 
     /**
      * Login api
+     *
+     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam password string required Password of the user. Example: ravi@123
      *
      * @return \Illuminate\Http\Response
      */
