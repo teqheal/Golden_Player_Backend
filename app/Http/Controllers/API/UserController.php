@@ -7,6 +7,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use App\Http\Resources\User as UserResource;
 
 class UserController extends BaseController
 {
@@ -119,5 +120,54 @@ class UserController extends BaseController
         } else {
             return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
         }
+    }
+
+    /**
+     * Edit Profile api
+     *
+     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function editProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $user = User::where('id', Auth::user()->id)->first();
+        $user->name = $request->name;
+        $user->save();
+
+        return $this->sendResponse(new UserResource($user), 'User profile updated successfully.');
+    }
+
+    /**
+     * Change password api
+     *
+     * @bodyParam password string required New password. Example: test@123
+     * @bodyParam confirm_password string required Confirm password. Example: test@123
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required',
+            'confirm_password' => 'required|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $user = User::where('id', Auth::user()->id)->first();
+        $user->password = bcrypt($request->password);
+        $user->save();
+        return $this->sendResponse([], 'Password changed successfully.');
     }
 }

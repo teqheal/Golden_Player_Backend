@@ -18,5 +18,7 @@ Route::post('login', 'API\UserController@login');
 Route::post('socialLogin', 'API\UserController@socialLogin');
 
 Route::middleware('auth:api')->group(function () {
+    Route::post('editprofile', 'API\UserController@editProfile');
+    Route::post('changepassword', 'API\UserController@changePassword');
     Route::get('celebs', 'API\CelebrityController@getCelebs');
 });
