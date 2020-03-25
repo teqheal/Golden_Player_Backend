@@ -48,7 +48,7 @@ class UserController extends BaseController
      *
      * @bodyParam name string required Name of the user. Example: Ravi Gaudani
      * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
-     * @bodyParam birth_date string not required Birth date of the user. Example: 1993-12-31
+     * @bodyParam birth_date string Birth date of the user. Example: 1993-12-31
      * @bodyParam social_type string required Type of social account 1 = FB, 2 = Insta. Example: 1
      * @bodyParam social_account_id string required Id of the social account. Example: social account id
      *
@@ -140,7 +140,7 @@ class UserController extends BaseController
      * Edit Profile api
      *
      * @bodyParam name string required Name of the user. Example: Ravi Gaudani
-     * @bodyParam birth_date string not required Birth date of the user. Example: 1993-12-31
+     * @bodyParam birth_date string required Birth date of the user. Example: 1993-12-31
      *
      * @return \Illuminate\Http\Response
      */
@@ -148,6 +148,7 @@ class UserController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
+            'birth_date' => 'required|date',
         ]);
 
         if ($validator->fails()) {
