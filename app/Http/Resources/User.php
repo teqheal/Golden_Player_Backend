@@ -18,7 +18,7 @@ class User extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'email_verified_at' => $this->email_verified_at->format('d/m/Y H:i:s'),
+            'email_verified_at' =>  ($this->email_verified_at != null) ? $this->email_verified_at->format('d/m/Y H:i:s') : null,
             'birth_date' => $this->birth_date->format('d/m/Y'),
             'profile_pic' =>$this->profile_pic
         ];
