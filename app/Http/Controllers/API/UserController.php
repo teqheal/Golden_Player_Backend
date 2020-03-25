@@ -17,6 +17,7 @@ class UserController extends BaseController
      * @bodyParam name string required Name of the user. Example: Ravi Gaudani
      * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
      * @bodyParam password string required Password of the user. Example: ravi@123
+     * @bodyParam birth_date string required Birth date of the user. Example: 1993-12-31
      *
      * @return \Illuminate\Http\Response
      */
@@ -25,6 +26,7 @@ class UserController extends BaseController
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
+            'birth_date' => 'required|date',
             'password' => 'required',
         ]);
 
@@ -46,6 +48,7 @@ class UserController extends BaseController
      *
      * @bodyParam name string required Name of the user. Example: Ravi Gaudani
      * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam birth_date string not required Birth date of the user. Example: 1993-12-31
      * @bodyParam social_type string required Type of social account 1 = FB, 2 = Insta. Example: 1
      * @bodyParam social_account_id string required Id of the social account. Example: social account id
      *
@@ -88,6 +91,7 @@ class UserController extends BaseController
                 $user = new User();
                 $user->name = $request->name;
                 $user->email = $request->email;
+                $user->birth_date = $request->birth_date;
                 if ($request->social_type == 1) {
                     $user->facebook_id = $request->social_account_id;
                 } else {
@@ -123,9 +127,20 @@ class UserController extends BaseController
     }
 
     /**
+     * Get user detail
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getUserDetail()
+    {
+        return $this->sendResponse(new UserResource(Auth::user()), 'User profile get successfully.');
+    }
+
+    /**
      * Edit Profile api
      *
      * @bodyParam name string required Name of the user. Example: Ravi Gaudani
+     * @bodyParam birth_date string not required Birth date of the user. Example: 1993-12-31
      *
      * @return \Illuminate\Http\Response
      */
@@ -141,6 +156,7 @@ class UserController extends BaseController
 
         $user = User::where('id', Auth::user()->id)->first();
         $user->name = $request->name;
+        $user->birth_date = $request->birth_date;
         $user->save();
 
         return $this->sendResponse(new UserResource($user), 'User profile updated successfully.');
