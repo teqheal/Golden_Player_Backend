@@ -4,20 +4,21 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\User;
+use App\Player;
 use Illuminate\Support\Facades\Auth;
 use Validator;
-use App\Http\Resources\User as UserResource;
+use App\Http\Resources\Player as PlayerResource;
+use Illuminate\Support\Facades\Hash;
 
-class UserController extends BaseController
+class PlayerController extends BaseController
 {
     /**
      * Register api
      *
-     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
-     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
-     * @bodyParam password string required Password of the user. Example: ravi@123
-     * @bodyParam birth_date string required Birth date of the user. Example: 1993-12-31
+     * @bodyParam name string required Name of the player. Example: Ravi Gaudani
+     * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam password string required Password of the player. Example: ravi@123
+     * @bodyParam birth_date string required Birth date of the player. Example: 1993-12-31
      *
      * @return \Illuminate\Http\Response
      */
@@ -25,7 +26,7 @@ class UserController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:players',
             'birth_date' => 'required|date',
             'password' => 'required',
         ]);
@@ -36,19 +37,19 @@ class UserController extends BaseController
 
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->accessToken;
-        $success['name'] =  $user->name;
+        $player = Player::create($input);
+        $success['token'] =  $player->createToken('MyApp')->accessToken;
+        $success['name'] =  $player->name;
 
-        return $this->sendResponse($success, 'User register successfully.');
+        return $this->sendResponse($success, 'Player register successfully.');
     }
 
     /**
      * Social Login api
      *
-     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
-     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
-     * @bodyParam birth_date string Birth date of the user. Example: 1993-12-31
+     * @bodyParam name string required Name of the player. Example: Ravi Gaudani
+     * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam birth_date string Birth date of the player. Example: 1993-12-31
      * @bodyParam social_type string required Type of social account 1 = FB, 2 = Insta. Example: 1
      * @bodyParam social_account_id string required Id of the social account. Example: social account id
      *
@@ -67,16 +68,16 @@ class UserController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $findUser = User::where('facebook_id', $request->social_account_id)
+        $findPlayer = Player::where('facebook_id', $request->social_account_id)
             ->orWhere('instagram_id', $request->social_account_id)
             ->first();
 
-        if (!empty($findUser)) {
-            $success['token'] =  $findUser->createToken('MyApp')->accessToken;
-            $success['name'] =  $findUser->name;
-            return $this->sendResponse($success, 'User login successfully.');
+        if (!empty($findPlayer)) {
+            $success['token'] =  $findPlayer->createToken('MyApp')->accessToken;
+            $success['name'] =  $findPlayer->name;
+            return $this->sendResponse($success, 'Player login successfully.');
         } else {
-            $checkEmail = User::where('email', $request->email)->first();
+            $checkEmail = Player::where('email', $request->email)->first();
             if (!empty($checkEmail)) {
                 if ($request->social_type == 1) {
                     $checkEmail->facebook_id = $request->social_account_id;
@@ -86,21 +87,21 @@ class UserController extends BaseController
                 $checkEmail->save();
                 $success['token'] =  $checkEmail->createToken('MyApp')->accessToken;
                 $success['name'] =  $checkEmail->name;
-                return $this->sendResponse($success, 'User login successfully.');
+                return $this->sendResponse($success, 'Player login successfully.');
             } else {
-                $user = new User();
-                $user->name = $request->name;
-                $user->email = $request->email;
-                $user->birth_date = $request->birth_date;
+                $player = new Player();
+                $player->name = $request->name;
+                $player->email = $request->email;
+                $player->birth_date = $request->birth_date;
                 if ($request->social_type == 1) {
-                    $user->facebook_id = $request->social_account_id;
+                    $player->facebook_id = $request->social_account_id;
                 } else {
-                    $user->instagram_id = $request->social_account_id;
+                    $player->instagram_id = $request->social_account_id;
                 }
-                $user->save();
-                $success['token'] =  $user->createToken('MyApp')->accessToken;
-                $success['name'] =  $user->name;
-                return $this->sendResponse($success, 'User login successfully.');
+                $player->save();
+                $success['token'] =  $player->createToken('MyApp')->accessToken;
+                $success['name'] =  $player->name;
+                return $this->sendResponse($success, 'Player login successfully.');
             }
         }
     }
@@ -108,39 +109,38 @@ class UserController extends BaseController
     /**
      * Login api
      *
-     * @bodyParam email string required Email of the user. Example: ravi.b.gaudani@gmail.com
-     * @bodyParam password string required Password of the user. Example: ravi@123
+     * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
+     * @bodyParam password string required Password of the player. Example: ravi@123
      *
      * @return \Illuminate\Http\Response
      */
     public function login(Request $request)
     {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            $success['token'] =  $user->createToken('MyApp')->accessToken;
-            $success['name'] =  $user->name;
-
-            return $this->sendResponse($success, 'User login successfully.');
+        $player = Player::where('email', $request->email)->first();
+        if(!empty($player) && Hash::check($request->password, $player->password)) {
+            $success['token'] =  $player->createToken('MyApp')->accessToken;
+            $success['name'] =  $player->name;
+            return $this->sendResponse($success, 'Player login successfully.');
         } else {
             return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
         }
     }
 
     /**
-     * Get user detail
+     * Get player detail
      *
      * @return \Illuminate\Http\Response
      */
-    public function getUserDetail()
+    public function getPlayerDetail()
     {
-        return $this->sendResponse(new UserResource(Auth::user()), 'User profile get successfully.');
+        return $this->sendResponse(new PlayerResource(Auth::guard('player')->user()), 'Player profile get successfully.');
     }
 
     /**
      * Edit Profile api
      *
-     * @bodyParam name string required Name of the user. Example: Ravi Gaudani
-     * @bodyParam birth_date string required Birth date of the user. Example: 1993-12-31
+     * @bodyParam name string required Name of the player. Example: Ravi Gaudani
+     * @bodyParam birth_date string required Birth date of the player. Example: 1993-12-31
      *
      * @return \Illuminate\Http\Response
      */
@@ -155,12 +155,12 @@ class UserController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $user = User::where('id', Auth::user()->id)->first();
-        $user->name = $request->name;
-        $user->birth_date = $request->birth_date;
-        $user->save();
+        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+        $player->name = $request->name;
+        $player->birth_date = $request->birth_date;
+        $player->save();
 
-        return $this->sendResponse(new UserResource($user), 'User profile updated successfully.');
+        return $this->sendResponse(new PlayerResource($player), 'Player profile updated successfully.');
     }
 
     /**
@@ -182,9 +182,9 @@ class UserController extends BaseController
             return $this->sendError('Validation Error.', $validator->errors());
         }
 
-        $user = User::where('id', Auth::user()->id)->first();
-        $user->password = bcrypt($request->password);
-        $user->save();
+        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+        $player->password = bcrypt($request->password);
+        $player->save();
         return $this->sendResponse([], 'Password changed successfully.');
     }
 }

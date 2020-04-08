@@ -15,7 +15,7 @@ class CreateMeetCelebRequestsTable extends Migration
     {
         Schema::create('meet_celeb_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('player_id')->constrained();
             $table->foreignId('celebrity_id')->constrained();
             $table->foreignId('payment_id')->constrained();
             $table->timestamps();

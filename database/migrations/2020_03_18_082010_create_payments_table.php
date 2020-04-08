@@ -15,7 +15,7 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('player_id')->constrained();
             $table->smallInteger('game_type')->default(0)->comment('1: Match, 2: Celeb');
             $table->smallInteger('payment_type')->default(0)->comment('1: In App, 2: PayPal');
             $table->smallInteger('payment_status')->default(0)->comment('0: Failed, 2: Success');

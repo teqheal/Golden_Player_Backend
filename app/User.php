@@ -2,14 +2,12 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'birth_date', 'profile_pic', 'facebook_id', 'instagram_id'
+        'first_name', 'last_name', 'email', 'password'
     ];
 
     /**
@@ -29,14 +27,21 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
+    public function isAdmin()
+    {
+        return ($this->role == 'admin');
+    }
 
-    protected $dates = ['birth_date'];
+    public function isEmployee()
+    {
+        return ($this->role == 'employee');
+    }
+
+    public static function login($request)
+    {
+        $remember = $request->remember;
+        $email = $request->email;
+        $password = $request->password;
+        return (\Auth::attempt(['email' => $email, 'password' => $password], $remember));
+    }
 }

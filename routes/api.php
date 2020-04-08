@@ -13,13 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('register', 'API\UserController@register');
-Route::post('login', 'API\UserController@login');
-Route::post('socialLogin', 'API\UserController@socialLogin');
+Route::post('register', 'API\PlayerController@register');
+Route::post('login', 'API\PlayerController@login');
+Route::post('socialLogin', 'API\PlayerController@socialLogin');
 
-Route::middleware('auth:api')->group(function () {
-    Route::get('getuserdetail', 'API\UserController@getUserDetail');
-    Route::post('editprofile', 'API\UserController@editProfile');
-    Route::post('changepassword', 'API\UserController@changePassword');
+Route::middleware('auth:player')->group(function () {
+    Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
+    Route::post('editprofile', 'API\PlayerController@editProfile');
+    Route::post('changepassword', 'API\PlayerController@changePassword');
     Route::get('celebs', 'API\CelebrityController@getCelebs');
 });
