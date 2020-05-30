@@ -21,5 +21,7 @@ Route::middleware('auth:player')->group(function () {
     Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
     Route::post('editprofile', 'API\PlayerController@editProfile');
     Route::post('changepassword', 'API\PlayerController@changePassword');
+    Route::get('games', 'API\MatchController@matches');
+    Route::post('addbet', 'API\PlayerBetController@addbet');
     Route::get('celebs', 'API\CelebrityController@getCelebs');
 });
