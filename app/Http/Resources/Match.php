@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Team as TeamResource;
+use Illuminate\Support\Facades\Auth;
 
 class Match extends JsonResource
 {
@@ -21,6 +22,7 @@ class Match extends JsonResource
             'away_team' => new TeamResource($this->awayTeam),
             'start_datetime' => $this->start_datetime,
             'end_datetime' => $this->end_datetime,
+            'bets_for' => $this->userBet->bets_for
         ];
     }
 }

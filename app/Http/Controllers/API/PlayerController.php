@@ -8,12 +8,13 @@ use App\Player;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Player as PlayerResource;
+use App\Http\Resources\Match as MatchResource;
 use Illuminate\Support\Facades\Hash;
 
 class PlayerController extends BaseController
 {
     /**
-     * Register api
+     * Register
      *
      * @bodyParam name string required Name of the player. Example: Ravi Gaudani
      * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
@@ -45,7 +46,7 @@ class PlayerController extends BaseController
     }
 
     /**
-     * Social Login api
+     * Social Login
      *
      * @bodyParam name string required Name of the player. Example: Ravi Gaudani
      * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
@@ -107,7 +108,7 @@ class PlayerController extends BaseController
     }
 
     /**
-     * Login api
+     * Login
      *
      * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
      * @bodyParam password string required Password of the player. Example: ravi@123
@@ -137,7 +138,7 @@ class PlayerController extends BaseController
     }
 
     /**
-     * Edit Profile api
+     * Edit Profile
      *
      * @bodyParam name string required Name of the player. Example: Ravi Gaudani
      * @bodyParam birth_date string required Birth date of the player. Example: 1993-12-31
@@ -164,7 +165,7 @@ class PlayerController extends BaseController
     }
 
     /**
-     * Change password api
+     * Change password
      *
      * @bodyParam password string required New password. Example: test@123
      * @bodyParam confirm_password string required Confirm password. Example: test@123
@@ -186,5 +187,18 @@ class PlayerController extends BaseController
         $player->password = bcrypt($request->password);
         $player->save();
         return $this->sendResponse([], 'Password changed successfully.');
+    }
+
+    /**
+     * My Games
+     *
+     * Get all the games in which user participate.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getMyGames()
+    {
+        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+        return $this->sendResponse(MatchResource::collection($player->matches()->paginate(10)), 'Get games successfully.');
     }
 }

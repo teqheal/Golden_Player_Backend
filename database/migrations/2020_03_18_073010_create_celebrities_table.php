@@ -18,8 +18,8 @@ class CreateCelebritiesTable extends Migration
             $table->string('name');
             $table->text('description');
             $table->date('birth_date');
-            $table->dateTime('meet_start', 0);
-            $table->dateTime('meet_end', 0);
+            $table->dateTime('meet_start');
+            $table->dateTime('meet_end');
             $table->longText('images');
             $table->timestamps();
         });

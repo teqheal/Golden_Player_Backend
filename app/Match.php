@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Match extends Model
 {
@@ -29,5 +30,15 @@ class Match extends Model
     public function awayTeam()
     {
         return $this->belongsTo('App\Team', 'away_team_id', 'id');
+    }
+
+    public function goldenGame()
+    {
+        return $this->belongsTo('App\GoldenGame');
+    }
+
+    public function userBet()
+    {
+        return $this->hasOne('App\PlayerBet')->where('player_id', Auth::guard('player')->user()->id);
     }
 }

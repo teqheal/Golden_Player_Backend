@@ -15,8 +15,9 @@ class CreateGoldenGamesTable extends Migration
     {
         Schema::create('golden_games', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('start_datetime')->nullable();
-            $table->timestamp('end_datetime')->nullable();
+            $table->string('name');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->foreignId('celebrity_id')->constrained();
             $table->timestamps();
         });

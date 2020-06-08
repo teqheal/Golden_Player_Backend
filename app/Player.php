@@ -39,4 +39,9 @@ class Player extends Authenticatable
     ];
 
     protected $dates = ['birth_date'];
+
+    public function matches()
+    {
+        return $this->belongsToMany('App\Match', 'player_bets');
+    }
 }

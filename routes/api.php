@@ -13,15 +13,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('register', 'API\PlayerController@register');
-Route::post('login', 'API\PlayerController@login');
-Route::post('socialLogin', 'API\PlayerController@socialLogin');
+Route::group(['middleware' => ['jsonResponse']], function () {
+    Route::post('register', 'API\PlayerController@register');
+    Route::post('login', 'API\PlayerController@login');
+    Route::post('socialLogin', 'API\PlayerController@socialLogin');
 
-Route::middleware('auth:player')->group(function () {
-    Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
-    Route::post('editprofile', 'API\PlayerController@editProfile');
-    Route::post('changepassword', 'API\PlayerController@changePassword');
-    Route::get('games', 'API\MatchController@matches');
-    Route::post('addbet', 'API\PlayerBetController@addbet');
-    Route::get('celebs', 'API\CelebrityController@getCelebs');
+    Route::middleware('auth:player')->group(function () {
+        Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
+        Route::post('editprofile', 'API\PlayerController@editProfile');
+        Route::post('changepassword', 'API\PlayerController@changePassword');
+        Route::get('getgoldengame', 'API\GoldenGameController@getGoldenGame');
+        Route::post('addbet', 'API\PlayerBetController@addbet');
+        Route::get('getcelebs', 'API\CelebrityController@getCelebs');
+        Route::get('getmygames', 'API\PlayerController@getMyGames');
+    });
 });

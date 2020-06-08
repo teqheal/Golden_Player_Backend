@@ -10,7 +10,7 @@ use App\Http\Resources\Celebrity as CelebrityResource;
 class CelebrityController extends BaseController
 {
     /**
-     * Display a listing of the resource.
+     * Get Celebrities
      *
      * @return \Illuminate\Http\Response
      */

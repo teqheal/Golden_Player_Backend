@@ -6,6 +6,7 @@ use App\PlayerBet;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class PlayerBetController extends BaseController
@@ -22,19 +23,22 @@ class PlayerBetController extends BaseController
     public function addbet(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'match_id' => 'required',
-            'bets_for' => 'required',
-            'is_used_joker' => 'required'
+            'bets' => 'required',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
         }
-
-        $input = $request->all();
-        $input['player_id'] = Auth::guard('player')->user()->id;
-        $bet = PlayerBet::create($input);
-
-        return $this->sendResponse($bet, 'Player register successfully.');
+        $data = $request->bets;
+        $insertData = [];
+        foreach ($data as $val) {
+            $val['created_at'] = Carbon::now();
+            $insertData[] = $val;
+        }
+        if (sizeof($insertData) > 0) {
+            $bet = PlayerBet::insert($insertData);
+            return $this->sendResponse($bet, 'Bets placed successfully.');
+        }
+        return $this->sendError('Somthing went wrong.');
     }
 }

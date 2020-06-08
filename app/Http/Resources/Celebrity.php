@@ -18,9 +18,9 @@ class Celebrity extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'birth_date' => $this->birth_date->format('d/m/Y'),
-            'meet_start' => $this->meet_start->format('d/m/Y'),
-            'meet_end' => $this->meet_end->format('d/m/Y'),
+            'birth_date' => $this->birth_date,
+            'meet_start' => $this->meet_start,
+            'meet_end' => $this->meet_end,
             'images' => $this->images
         ];
     }

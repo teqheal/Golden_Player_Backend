@@ -2,9 +2,9 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class PlayerBet extends Model
+class PlayerBet extends Pivot
 {
     protected $table = 'player_bets';
     protected $primaryKey = 'id';
@@ -17,4 +17,14 @@ class PlayerBet extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function match()
+    {
+        return $this->belongsTo('App\Match');
+    }
+
+    public function player()
+    {
+        return $this->belongsTo('App\Player');
+    }
 }
