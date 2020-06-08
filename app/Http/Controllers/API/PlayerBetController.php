@@ -14,9 +14,7 @@ class PlayerBetController extends BaseController
     /**
      * Add new bet
      *
-     * @bodyParam match_id integer required Match id to place bet for. Example: 1
-     * @bodyParam bets_for string required selected option (home team id OR away team id OR DRAW). Example: 1
-     * @bodyParam is_used_joker integer required Is used joker or not 1 = used, 0 = not used. Example: 1
+     * @bodyParam bets array required Match id to place bet for. Example: [{"player_id": 1,"match_id" : 1,"bets_for": "Home","is_used_joker": 0},{"player_id": 1,"match_id" : 1,"bets_for": "Away","is_used_joker": 0}]
      *
      * @return \Illuminate\Http\Response
      */
