@@ -7,7 +7,6 @@ use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class PlayerBetController extends BaseController
 {

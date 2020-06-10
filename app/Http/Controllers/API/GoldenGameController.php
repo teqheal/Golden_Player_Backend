@@ -16,7 +16,7 @@ class GoldenGameController extends BaseController
      */
     public function getGoldenGame()
     {
-        $goldenGames = GoldenGame::whereRaw('MONTH(start_date) = MONTH(CURRENT_DATE)')->get();
-        return $this->sendResponse(GoldenGameResource::collection($goldenGames), 'Get golden game successfully.');
+        $goldenGames = GoldenGame::whereRaw('MONTH(start_date) = MONTH(CURRENT_DATE)')->first();
+        return $this->sendResponse(new GoldenGameResource($goldenGames), 'Get golden game successfully.');
     }
 }
