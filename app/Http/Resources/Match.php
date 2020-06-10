@@ -22,7 +22,7 @@ class Match extends JsonResource
             'away_team' => new TeamResource($this->awayTeam),
             'start_datetime' => $this->start_datetime,
             'end_datetime' => $this->end_datetime,
-            'bets_for' => $this->userBet->bets_for
+            'bets_for' => isset($this->userBet) ? $this->userBet->bets_for : ""
         ];
     }
 }
