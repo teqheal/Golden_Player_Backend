@@ -19,7 +19,7 @@ class CreateMatchesTable extends Migration
             $table->foreignId('away_team_id')->constrained('teams');
             $table->dateTime('start_datetime');
             $table->dateTime('end_datetime');
-            $table->unsignedBigInteger('win_team_id')->nullable();
+            $table->string('win_team')->nullable();
             $table->foreignId('golden_game_id')->constrained();
             $table->boolean('is_active')->default(1);
             $table->timestamps();
