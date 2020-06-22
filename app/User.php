@@ -26,22 +26,4 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-
-    public function isAdmin()
-    {
-        return ($this->role == 'admin');
-    }
-
-    public function isEmployee()
-    {
-        return ($this->role == 'employee');
-    }
-
-    public static function login($request)
-    {
-        $remember = $request->remember;
-        $email = $request->email;
-        $password = $request->password;
-        return (\Auth::attempt(['email' => $email, 'password' => $password], $remember));
-    }
 }

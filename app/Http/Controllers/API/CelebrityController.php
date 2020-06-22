@@ -16,7 +16,11 @@ class CelebrityController extends BaseController
      */
     public function getCelebs()
     {
-        $celebs = Celebrity::where('is_active', 0)->get();
-        return $this->sendResponse(CelebrityResource::collection($celebs), 'Get celebrities successfully.');
+        try {
+            $celebs = Celebrity::where('is_active', 0)->get();
+            return $this->sendResponse(CelebrityResource::collection($celebs), 'Get celebrities successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
     }
 }

@@ -17,7 +17,11 @@ class MatchController extends BaseController
      */
     public function matches()
     {
-        $matches = Match::where('start_datetime','>', Carbon::now())->where('is_active', 1)->get();
-        return $this->sendResponse(MatchResource::collection($matches), 'Get matches successfully.');
+        try {
+            $matches = Match::where('start_datetime', '>', Carbon::now())->where('is_active', 1)->get();
+            return $this->sendResponse(MatchResource::collection($matches), 'Get matches successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
     }
 }

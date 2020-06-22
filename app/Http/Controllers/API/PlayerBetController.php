@@ -6,7 +6,7 @@ use App\PlayerBet;
 use Validator;
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController as BaseController;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class PlayerBetController extends BaseController
 {
@@ -19,23 +19,24 @@ class PlayerBetController extends BaseController
      */
     public function addbet(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'bets' => 'required',
-        ]);
+        try {
+            $validator = Validator::make($request->all(), [
+                'bets' => 'required',
+            ]);
 
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            foreach ($request->bets as $bet) {
+                if ($bet['id'] && $bet['id'] != null) {
+                    PlayerBet::where('id', $bet['id'])->update(['bets_for' => $bet['bets_for'], 'is_used_joker' => $bet['is_used_joker']]);
+                } else {
+                    PlayerBet::create(['player_id' => Auth::guard('player')->user()->id, 'match_id' => $bet['match_id'], 'bets_for' => $bet['bets_for'], 'is_used_joker' => $bet['is_used_joker']]);
+                }
+            }
+            return $this->sendResponse(null, 'Bets placed successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
-        $data = $request->bets;
-        $insertData = [];
-        foreach ($data as $val) {
-            $val['created_at'] = Carbon::now();
-            $insertData[] = $val;
-        }
-        if (sizeof($insertData) > 0) {
-            $bet = PlayerBet::insert($insertData);
-            return $this->sendResponse($bet, 'Bets placed successfully.');
-        }
-        return $this->sendError('Somthing went wrong.');
     }
 }

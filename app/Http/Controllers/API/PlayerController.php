@@ -25,24 +25,25 @@ class PlayerController extends BaseController
      */
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email|unique:players',
-            'birth_date' => 'required|date',
-            'password' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email|unique:players',
+                'birth_date' => 'required|date',
+                'password' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            $input = $request->all();
+            $input['password'] = bcrypt($input['password']);
+            $player = Player::create($input);
+            $success['token'] =  $player->createToken('MyApp')->accessToken;
+            $success['name'] =  $player->name;
+            return $this->sendResponse($success, 'Player register successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
-
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $player = Player::create($input);
-        $success['token'] =  $player->createToken('MyApp')->accessToken;
-        $success['name'] =  $player->name;
-
-        return $this->sendResponse($success, 'Player register successfully.');
     }
 
     /**
@@ -58,52 +59,53 @@ class PlayerController extends BaseController
      */
     public function socialLogin(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
-            'social_type' => 'required',
-            'social_account_id' => 'required',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
-        }
-
-        $findPlayer = Player::where('facebook_id', $request->social_account_id)
-            ->orWhere('instagram_id', $request->social_account_id)
-            ->first();
-
-        if (!empty($findPlayer)) {
-            $success['token'] =  $findPlayer->createToken('MyApp')->accessToken;
-            $success['name'] =  $findPlayer->name;
-            return $this->sendResponse($success, 'Player login successfully.');
-        } else {
-            $checkEmail = Player::where('email', $request->email)->first();
-            if (!empty($checkEmail)) {
-                if ($request->social_type == 1) {
-                    $checkEmail->facebook_id = $request->social_account_id;
-                } else {
-                    $checkEmail->instagram_id = $request->social_account_id;
-                }
-                $checkEmail->save();
-                $success['token'] =  $checkEmail->createToken('MyApp')->accessToken;
-                $success['name'] =  $checkEmail->name;
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email',
+                'social_type' => 'required',
+                'social_account_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            $findPlayer = Player::where('facebook_id', $request->social_account_id)
+                ->orWhere('instagram_id', $request->social_account_id)
+                ->first();
+            if (!empty($findPlayer)) {
+                $success['token'] =  $findPlayer->createToken('MyApp')->accessToken;
+                $success['name'] =  $findPlayer->name;
                 return $this->sendResponse($success, 'Player login successfully.');
             } else {
-                $player = new Player();
-                $player->name = $request->name;
-                $player->email = $request->email;
-                $player->birth_date = $request->birth_date;
-                if ($request->social_type == 1) {
-                    $player->facebook_id = $request->social_account_id;
+                $checkEmail = Player::where('email', $request->email)->first();
+                if (!empty($checkEmail)) {
+                    if ($request->social_type == 1) {
+                        $checkEmail->facebook_id = $request->social_account_id;
+                    } else {
+                        $checkEmail->instagram_id = $request->social_account_id;
+                    }
+                    $checkEmail->save();
+                    $success['token'] =  $checkEmail->createToken('MyApp')->accessToken;
+                    $success['name'] =  $checkEmail->name;
+                    return $this->sendResponse($success, 'Player login successfully.');
                 } else {
-                    $player->instagram_id = $request->social_account_id;
+                    $player = new Player();
+                    $player->name = $request->name;
+                    $player->email = $request->email;
+                    $player->birth_date = $request->birth_date;
+                    if ($request->social_type == 1) {
+                        $player->facebook_id = $request->social_account_id;
+                    } else {
+                        $player->instagram_id = $request->social_account_id;
+                    }
+                    $player->save();
+                    $success['token'] =  $player->createToken('MyApp')->accessToken;
+                    $success['name'] =  $player->name;
+                    return $this->sendResponse($success, 'Player login successfully.');
                 }
-                $player->save();
-                $success['token'] =  $player->createToken('MyApp')->accessToken;
-                $success['name'] =  $player->name;
-                return $this->sendResponse($success, 'Player login successfully.');
             }
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
     }
 
@@ -117,13 +119,24 @@ class PlayerController extends BaseController
      */
     public function login(Request $request)
     {
-        $player = Player::where('email', $request->email)->first();
-        if(!empty($player) && Hash::check($request->password, $player->password)) {
-            $success['token'] =  $player->createToken('MyApp')->accessToken;
-            $success['name'] =  $player->name;
-            return $this->sendResponse($success, 'Player login successfully.');
-        } else {
-            return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
+        try {
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            $player = Player::where('email', $request->email)->first();
+            if (!empty($player) && Hash::check($request->password, $player->password)) {
+                $success['token'] =  $player->createToken('MyApp')->accessToken;
+                $success['name'] =  $player->name;
+                return $this->sendResponse($success, 'Player login successfully.');
+            } else {
+                return $this->sendError('Unauthorised.', 401);
+            }
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
     }
 
@@ -134,7 +147,11 @@ class PlayerController extends BaseController
      */
     public function getPlayerDetail()
     {
-        return $this->sendResponse(new PlayerResource(Auth::guard('player')->user()), 'Player profile get successfully.');
+        try {
+            return $this->sendResponse(new PlayerResource(Auth::guard('player')->user()), 'Player profile get successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
     }
 
     /**
@@ -147,21 +164,22 @@ class PlayerController extends BaseController
      */
     public function editProfile(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'birth_date' => 'required|date',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+        try {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'birth_date' => 'required|date',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+            $player->name = $request->name;
+            $player->birth_date = $request->birth_date;
+            $player->save();
+            return $this->sendResponse(new PlayerResource($player), 'Player profile updated successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
-
-        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
-        $player->name = $request->name;
-        $player->birth_date = $request->birth_date;
-        $player->save();
-
-        return $this->sendResponse(new PlayerResource($player), 'Player profile updated successfully.');
     }
 
     /**
@@ -174,19 +192,21 @@ class PlayerController extends BaseController
      */
     public function changePassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'password' => 'required',
-            'confirm_password' => 'required|same:password',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors());
+        try {
+            $validator = Validator::make($request->all(), [
+                'password' => 'required',
+                'confirm_password' => 'required|same:password',
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first(), 422);
+            }
+            $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+            $player->password = bcrypt($request->password);
+            $player->save();
+            return $this->sendResponse([], 'Password changed successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
         }
-
-        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
-        $player->password = bcrypt($request->password);
-        $player->save();
-        return $this->sendResponse([], 'Password changed successfully.');
     }
 
     /**
@@ -198,7 +218,11 @@ class PlayerController extends BaseController
      */
     public function getMyGames()
     {
-        $player = Player::where('id', Auth::guard('player')->user()->id)->first();
-        return $this->sendResponse(MatchResource::collection($player->matches()->paginate(10)), 'Get games successfully.');
+        try {
+            $player = Player::where('id', Auth::guard('player')->user()->id)->first();
+            return $this->sendResponse(MatchResource::collection($player->matches()->paginate(10)), 'Get games successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
     }
 }
