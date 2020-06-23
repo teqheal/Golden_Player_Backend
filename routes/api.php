@@ -28,5 +28,7 @@ Route::group(['middleware' => ['jsonResponse']], function () {
         Route::get('getcelebs', 'API\CelebrityController@getCelebs');
         Route::get('getmygames', 'API\PlayerController@getMyGames');
         Route::get('getleaderboard', 'API\LeaderBoardController@getLeaderBoard');
+        Route::get('privacypolicy', 'API\PrivacyPolicyController@privacypolicy');
+        Route::get('faq', 'API\FaqController@faq');
     });
 });
