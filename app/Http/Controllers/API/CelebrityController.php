@@ -30,7 +30,6 @@ class CelebrityController extends BaseController
      * Meet Celebrity
      *
      * @bodyParam celebrity_id integer required Id of the celebrity. Example: 1
-     * @bodyParam email string required Email of the player. Example: ravi.b.gaudani@gmail.com
      *
      * @return \Illuminate\Http\Response
      */
