@@ -16,8 +16,9 @@ class Match extends JsonResource
      */
     public function toArray($request)
     {
-        $betsFor = "";
+        $betsFor = $betId =  "";
         if (isset($this->userBet)) {
+            $betId = $this->userBet->id;
             if ($this->userBet->is_used_joker == 1) {
                 $betsFor = "Joker";
             } else {
@@ -30,7 +31,8 @@ class Match extends JsonResource
             'away_team' => new TeamResource($this->awayTeam),
             'start_datetime' => $this->start_datetime,
             'end_datetime' => $this->end_datetime,
-            'bets_for' => $betsFor
+            'bets_for' => $betsFor,
+            'bet_id' => $betId
         ];
     }
 }

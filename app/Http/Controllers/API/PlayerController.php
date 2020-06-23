@@ -133,7 +133,7 @@ class PlayerController extends BaseController
                 $success['name'] =  $player->name;
                 return $this->sendResponse($success, 'Player login successfully.');
             } else {
-                return $this->sendError('Unauthorised.', 401);
+                return $this->sendError('Unauthorised', 401);
             }
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);

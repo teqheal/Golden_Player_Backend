@@ -24,7 +24,9 @@ Route::group(['middleware' => ['jsonResponse']], function () {
         Route::post('changepassword', 'API\PlayerController@changePassword');
         Route::get('getgoldengame', 'API\GoldenGameController@getGoldenGame');
         Route::post('addbet', 'API\PlayerBetController@addbet');
+        Route::post('meetceleb', 'API\CelebrityController@meetCeleb');
         Route::get('getcelebs', 'API\CelebrityController@getCelebs');
         Route::get('getmygames', 'API\PlayerController@getMyGames');
+        Route::get('getleaderboard', 'API\LeaderBoardController@getLeaderBoard');
     });
 });
