@@ -17,6 +17,7 @@ Route::group(['middleware' => ['jsonResponse']], function () {
     Route::post('register', 'API\PlayerController@register');
     Route::post('login', 'API\PlayerController@login');
     Route::post('socialLogin', 'API\PlayerController@socialLogin');
+    Route::get('privacypolicy', 'API\PrivacyPolicyController@privacypolicy');
 
     Route::middleware('auth:player')->group(function () {
         Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
@@ -28,7 +29,6 @@ Route::group(['middleware' => ['jsonResponse']], function () {
         Route::get('getcelebs', 'API\CelebrityController@getCelebs');
         Route::get('getmygames', 'API\PlayerController@getMyGames');
         Route::get('getleaderboard', 'API\LeaderBoardController@getLeaderBoard');
-        Route::get('privacypolicy', 'API\PrivacyPolicyController@privacypolicy');
         Route::get('faq', 'API\FaqController@faq');
     });
 });
