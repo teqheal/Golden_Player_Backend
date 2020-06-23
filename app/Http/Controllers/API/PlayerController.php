@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Validator;
 use App\Http\Resources\Player as PlayerResource;
 use App\Http\Resources\Match as MatchResource;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class PlayerController extends BaseController
@@ -216,11 +217,16 @@ class PlayerController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function getMyGames()
+    public function getMyGames(Request $request)
     {
         try {
             $player = Player::where('id', Auth::guard('player')->user()->id)->first();
-            return $this->sendResponse(MatchResource::collection($player->matches()->paginate(10)), 'Get games successfully.');
+            if($request->type == 'completed') {
+                $matches = $player->matches()->where('start_datetime', '<', Carbon::now())->paginate(10);
+            } else {
+                $matches = $player->matches()->where('start_datetime', '>=', Carbon::now())->paginate(10);
+            }
+            return $this->sendResponse(MatchResource::collection($matches), 'Get games successfully.');
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }

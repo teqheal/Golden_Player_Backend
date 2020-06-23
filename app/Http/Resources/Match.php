@@ -31,6 +31,7 @@ class Match extends JsonResource
             'away_team' => new TeamResource($this->awayTeam),
             'start_datetime' => $this->start_datetime,
             'end_datetime' => $this->end_datetime,
+            'win_team' => $this->win_team,
             'bets_for' => $betsFor,
             'bet_id' => $betId
         ];
