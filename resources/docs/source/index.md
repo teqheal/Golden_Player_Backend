@@ -657,4 +657,94 @@ fetch(url, {
 
 <!-- END_5566874511a1fdc1fe0a3216c9e377a0 -->
 
+<!-- START_163c6c900890db8b348143aac37b9da8 -->
+## Privacy Policy
+
+> Example request:
+
+```bash
+curl -X GET \
+    -G "http://localhost/api/privacypolicy" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json"
+```
+
+```javascript
+const url = new URL(
+    "http://localhost/api/privacypolicy"
+);
+
+let headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers: headers,
+})
+    .then(response => response.json())
+    .then(json => console.log(json));
+```
+
+
+> Example response (401):
+
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+### HTTP Request
+`GET api/privacypolicy`
+
+
+<!-- END_163c6c900890db8b348143aac37b9da8 -->
+
+<!-- START_fc69925eeaf83e770a9474a7b1eabfc8 -->
+## Faq
+
+> Example request:
+
+```bash
+curl -X GET \
+    -G "http://localhost/api/faq" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json"
+```
+
+```javascript
+const url = new URL(
+    "http://localhost/api/faq"
+);
+
+let headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers: headers,
+})
+    .then(response => response.json())
+    .then(json => console.log(json));
+```
+
+
+> Example response (401):
+
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+### HTTP Request
+`GET api/faq`
+
+
+<!-- END_fc69925eeaf83e770a9474a7b1eabfc8 -->
+
 

@@ -689,6 +689,72 @@ fetch(url, {
 <h3>HTTP Request</h3>
 <p><code>GET api/getleaderboard</code></p>
 <!-- END_5566874511a1fdc1fe0a3216c9e377a0 -->
+<!-- START_163c6c900890db8b348143aac37b9da8 -->
+<h2>Privacy Policy</h2>
+<blockquote>
+<p>Example request:</p>
+</blockquote>
+<pre><code class="language-bash">curl -X GET \
+    -G "http://localhost/api/privacypolicy" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json"</code></pre>
+<pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/privacypolicy"
+);
+
+let headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers: headers,
+})
+    .then(response =&gt; response.json())
+    .then(json =&gt; console.log(json));</code></pre>
+<blockquote>
+<p>Example response (401):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "Unauthenticated."
+}</code></pre>
+<h3>HTTP Request</h3>
+<p><code>GET api/privacypolicy</code></p>
+<!-- END_163c6c900890db8b348143aac37b9da8 -->
+<!-- START_fc69925eeaf83e770a9474a7b1eabfc8 -->
+<h2>Faq</h2>
+<blockquote>
+<p>Example request:</p>
+</blockquote>
+<pre><code class="language-bash">curl -X GET \
+    -G "http://localhost/api/faq" \
+    -H "Content-Type: application/json" \
+    -H "Accept: application/json"</code></pre>
+<pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/faq"
+);
+
+let headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+fetch(url, {
+    method: "GET",
+    headers: headers,
+})
+    .then(response =&gt; response.json())
+    .then(json =&gt; console.log(json));</code></pre>
+<blockquote>
+<p>Example response (401):</p>
+</blockquote>
+<pre><code class="language-json">{
+    "message": "Unauthenticated."
+}</code></pre>
+<h3>HTTP Request</h3>
+<p><code>GET api/faq</code></p>
+<!-- END_fc69925eeaf83e770a9474a7b1eabfc8 -->
       </div>
       <div class="dark-box">
                         <div class="lang-selector">
