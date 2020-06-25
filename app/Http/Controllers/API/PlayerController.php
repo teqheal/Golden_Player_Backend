@@ -250,7 +250,18 @@ class PlayerController extends BaseController
             ->where('player_id', $request->id)
             ->whereRaw("match_id IN(SELECT id FROM matches WHERE golden_game_id IN (SELECT id FROM golden_games WHERE MONTH(start_date) = MONTH(CURRENT_DATE)))")
             ->sum('points_earned');
-            return $this->sendResponse((object) array('total_points' => $totalPoints), 'Get total points successfully.');
+
+            $players = DB::table('player_bets')
+            ->whereRaw("match_id IN(SELECT id FROM matches WHERE golden_game_id IN (SELECT id FROM golden_games WHERE MONTH(start_date) = MONTH(CURRENT_DATE)))")
+            ->selectRaw("SUM(points_earned) AS total_points")
+            ->groupBy('player_id')
+            ->having('total_points', '>', $totalPoints)
+            ->orderBy('total_points', 'desc')
+            ->get();
+
+            $rank = sizeof($players) + 1;
+
+            return $this->sendResponse((object) array('total_points' => (int) $totalPoints, 'rank' => $rank), 'Get total points successfully.');
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
