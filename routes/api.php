@@ -23,12 +23,18 @@ Route::group(['middleware' => ['jsonResponse']], function () {
         Route::get('getplayerdetail', 'API\PlayerController@getPlayerDetail');
         Route::post('editprofile', 'API\PlayerController@editProfile');
         Route::post('changepassword', 'API\PlayerController@changePassword');
+        Route::get('getmygames', 'API\PlayerController@getMyGames');
+        Route::get('getplayerpoints', 'API\PlayerController@getPlayerPoints');
+
         Route::get('getgoldengame', 'API\GoldenGameController@getGoldenGame');
+        
         Route::post('addbet', 'API\PlayerBetController@addbet');
+        
         Route::post('meetceleb', 'API\CelebrityController@meetCeleb');
         Route::get('getcelebs', 'API\CelebrityController@getCelebs');
-        Route::get('getmygames', 'API\PlayerController@getMyGames');
+        
         Route::get('getleaderboard', 'API\LeaderBoardController@getLeaderBoard');
+        
         Route::get('faq', 'API\FaqController@faq');
     });
 });

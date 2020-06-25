@@ -10,6 +10,7 @@ use Validator;
 use App\Http\Resources\Player as PlayerResource;
 use App\Http\Resources\Match as MatchResource;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class PlayerController extends BaseController
@@ -220,13 +221,36 @@ class PlayerController extends BaseController
     public function getMyGames(Request $request)
     {
         try {
+            $perPage = $request->has('per_page') ? $request->per_page : 10;
             $player = Player::where('id', Auth::guard('player')->user()->id)->first();
             if($request->type == 'completed') {
-                $matches = $player->matches()->where('start_datetime', '<', Carbon::now())->paginate(10);
+                $matches = $player->matches()->where('start_datetime', '<', Carbon::now())->paginate($perPage);
             } else {
-                $matches = $player->matches()->where('start_datetime', '>=', Carbon::now())->paginate(10);
+                $matches = $player->matches()->where('start_datetime', '>=', Carbon::now())->paginate($perPage);
             }
-            return $this->sendResponse(MatchResource::collection($matches), 'Get games successfully.');
+            return $this->sendResponse(MatchResource::collection($matches)->appends(null), 'Get games successfully.');
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * Player total points
+     *
+     * Get total points of the player.
+     *
+     * @urlParam id required The ID of the player. Example: 1
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function getPlayerPoints(Request $request)
+    {
+        try {
+            $totalPoints = DB::table('player_bets')
+            ->where('player_id', $request->id)
+            ->whereRaw("match_id IN(SELECT id FROM matches WHERE golden_game_id IN (SELECT id FROM golden_games WHERE MONTH(start_date) = MONTH(CURRENT_DATE)))")
+            ->sum('points_earned');
+            return $this->sendResponse((object) array('total_points' => $totalPoints), 'Get total points successfully.');
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), 500);
         }
